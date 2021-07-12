@@ -1,0 +1,21 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:swiper_with_details/services/json_details/datum.dart';
+
+part 'data.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class ListData {
+  final Datum? data;
+
+  const ListData({
+    required this.data,
+  });
+
+  factory ListData.fromJson(Map<String, dynamic> json) =>
+      _$ListDataFromJson(json);
+      
+  Map<String, dynamic> toJson() => _$ListDataToJson(this);
+
+  @override
+  String toString() => 'ListData{data: $data}';
+}
