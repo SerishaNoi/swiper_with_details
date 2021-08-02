@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -6,36 +6,40 @@ import 'package:swiper_with_details/services/json_details/datum.dart';
 import 'package:swiper_with_details/services/parsing_attributes.dart';
 
 class ListOfDetails extends StatefulWidget {
+  final int selectedIndex;
+
+  const ListOfDetails({Key? key, required this.selectedIndex})
+      : super(key: key);
   @override
   _ListOfDetailsState createState() => _ListOfDetailsState();
 }
 
 class _ListOfDetailsState extends State<ListOfDetails> {
-  late Future<List<Datum>> series;
-
-  @override
-  void initState() {
-    super.initState();
-    series = fetchData();
-  }
+  Future<List<Datum>> series = DataServices().fetchData();
+  Color color = Colors.indigo;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[800],
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('lib/assets/1.jpg'), fit: BoxFit.cover),
-          ),
           child: Padding(
             padding: EdgeInsets.all(14),
             child: FutureBuilder<List<Datum>>(
               future: series,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  double score = double.parse(
-                      snapshot.data?.first.attributes?.averageRating ?? '');
+                  double score = double.parse(snapshot
+                          .data?[widget.selectedIndex]
+                          .attributes
+                          ?.averageRating ??
+                      '');
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,28 +49,36 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                       ),
                       Stack(
                         children: [
-                          Image.network(
-                            snapshot.data?.first.attributes?.posterImage
-                                    ?.medium ??
-                                '',
-                            height: 300,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              snapshot.data?[widget.selectedIndex].attributes
+                                      ?.posterImage?.medium ??
+                                  '',
+                              height: 300,
+                            ),
                           ),
                           Positioned(
-                            bottom: 8,
-                            right: 8,
+                            bottom: 224,
+                            right: 6,
                             child: CircularPercentIndicator(
+                              backgroundWidth: 12,
                               radius: 70,
                               lineWidth: 8.0,
                               percent: score / 100,
-                              progressColor: Colors.greenAccent,
-                              backgroundColor: Colors.red,
+                              progressColor: Colors.purpleAccent,
+                              backgroundColor: Colors.blue,
                               animation: true,
                               center: Text(
-                                  snapshot.data?.first.attributes
-                                          ?.averageRating ??
-                                      '',
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 18)),
+                                snapshot.data?[widget.selectedIndex].attributes
+                                        ?.averageRating ??
+                                    '',
+                                style: TextStyle(
+                                  color: Colors.lightGreen[800],
+                                  fontSize: 18,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -89,8 +101,8 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                                       color: Colors.white, fontSize: 18),
                                 ),
                                 Text(
-                                  snapshot.data?.first.attributes
-                                          ?.ageRatingGuide ??
+                                  snapshot.data?[widget.selectedIndex]
+                                          .attributes?.ageRatingGuide ??
                                       '',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 18),
@@ -108,7 +120,8 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                                       color: Colors.white, fontSize: 18),
                                 ),
                                 Text(
-                                  snapshot.data?.first.attributes?.showType
+                                  snapshot.data?[widget.selectedIndex]
+                                          .attributes?.showType
                                           .toString() ??
                                       '',
                                   style: TextStyle(
@@ -127,7 +140,8 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                                       color: Colors.white, fontSize: 18),
                                 ),
                                 Text(
-                                  snapshot.data?.first.attributes?.episodeCount
+                                  snapshot.data?[widget.selectedIndex]
+                                          .attributes?.episodeCount
                                           .toString() ??
                                       '',
                                   style: TextStyle(
@@ -146,7 +160,8 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                                       color: Colors.white, fontSize: 18),
                                 ),
                                 Text(
-                                  snapshot.data?.first.attributes?.startDate ??
+                                  snapshot.data?[widget.selectedIndex]
+                                          .attributes?.startDate ??
                                       '',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 18),
@@ -164,7 +179,8 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                                       color: Colors.white, fontSize: 18),
                                 ),
                                 Text(
-                                  snapshot.data?.first.attributes?.endDate
+                                  snapshot.data?[widget.selectedIndex]
+                                          .attributes?.endDate
                                           .toString() ??
                                       '',
                                   style: TextStyle(
@@ -179,18 +195,24 @@ class _ListOfDetailsState extends State<ListOfDetails> {
                         height: 14,
                       ),
                       Text(
-                        snapshot.data?.first.attributes?.titles?.enjp ?? '',
+                        snapshot.data?[widget.selectedIndex].attributes?.titles
+                                ?.enjp ??
+                            '',
                         style: TextStyle(color: Colors.white, fontSize: 24),
                       ),
                       Text(
-                        snapshot.data?.first.attributes?.titles?.jajp ?? '',
+                        snapshot.data?[widget.selectedIndex].attributes?.titles
+                                ?.jajp ??
+                            '',
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       SizedBox(
                         height: 14,
                       ),
                       Text(
-                        snapshot.data?.first.attributes?.description ?? '',
+                        snapshot.data?[widget.selectedIndex].attributes
+                                ?.description ??
+                            '',
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           color: Colors.white,
